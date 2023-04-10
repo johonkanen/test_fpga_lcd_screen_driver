@@ -6,7 +6,7 @@ library ieee;
 
 entity efinix_top is
     port (
-        clock   : std_logic;
+        clock_120Mhz   : in std_logic;
         uart_rx : in std_logic;
         uart_tx : out std_logic
     );
@@ -20,10 +20,10 @@ architecture rtl of efinix_top is
 
 begin
 
-    test_communications : process(clock)
+    test_communications : process(clock_120Mhz)
         
     begin
-        if rising_edge(clock) then
+        if rising_edge(clock_120Mhz) then
             init_bus(bus_to_communications);
             connect_read_only_data_to_address(bus_from_communications, bus_to_communications, 10, 44252);
             
@@ -31,6 +31,6 @@ begin
     end process test_communications;	
 
     u_communications : entity work.fpga_communications
-    port map(clock, uart_rx, uart_tx, bus_to_communications, bus_from_communications);
+    port map(clock_120Mhz, uart_rx, uart_tx, bus_to_communications, bus_from_communications);
 
 end rtl;

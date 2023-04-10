@@ -21,11 +21,13 @@ architecture rtl of efinix_top is
 begin
 
     test_communications : process(clock_120Mhz)
-        
     begin
         if rising_edge(clock_120Mhz) then
             init_bus(bus_to_communications);
             connect_read_only_data_to_address(bus_from_communications, bus_to_communications, 10, 44252);
+            connect_read_only_data_to_address(bus_from_communications, bus_to_communications, 100, 44253);
+            connect_read_only_data_to_address(bus_from_communications, bus_to_communications, 1001, 44254);
+            connect_read_only_data_to_address(bus_from_communications, bus_to_communications, 1002, 44255);
             
         end if; --rising_edge
     end process test_communications;	

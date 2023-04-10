@@ -32,7 +32,7 @@ begin
     begin
         if rising_edge(clock) then
             init_bus(bus_to_communications);
-            connect_read_only_data_to_address(bus_to_communications, bus_from_communications, 10, 44252);
+            connect_read_only_data_to_address(bus_from_communications, bus_to_communications, 10, 44252);
             
         end if; --rising_edge
     end process test_communications;	

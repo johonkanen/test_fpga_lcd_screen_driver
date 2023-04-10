@@ -7,3 +7,6 @@ temp/
 *.swo
 *.o
 *.lock
+*.vdb
+outflow/
+work_syn/

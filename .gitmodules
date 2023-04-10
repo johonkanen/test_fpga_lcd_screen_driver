@@ -1,0 +1,9 @@
+[submodule "source/vhdl_lcd_screen_driver"]
+	path = source/vhdl_lcd_screen_driver
+	url = https://github.com/johonkanen/vhdl_lcd_screen_driver.git
+[submodule "fpga_uart_pc_software"]
+	path = fpga_uart_pc_software
+	url = https://github.com/johonkanen/fpga_uart_pc_software.git
+[submodule "source/fpga_communication"]
+	path = source/fpga_communication
+	url = https://github.com/johonkanen/fpga_communication.git

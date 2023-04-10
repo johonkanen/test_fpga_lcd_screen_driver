@@ -6,3 +6,4 @@ temp/
 *.cf
 *.swo
 *.o
+*.lock

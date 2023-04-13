@@ -55,9 +55,10 @@ package body ram_write_pkg is
         address_in  : in integer
     ) is
     begin
-        self.write_enabled_with_1       <= '1';
-        self.write_buffer               <= data_in;
-        self.write_address              <= address_in;
+        self.write_enabled_with_1 <= '1';
+        self.write_buffer         <= data_in;
+        self.write_address        <= address_in;
+
         self.write_is_ready_pipeline(0) <= '1';
     end write_ram;
 ------------------------------------------------------------------------
@@ -180,24 +181,17 @@ begin
             end if;
         ------------------------------------------------------------------------
             -- create_ram_write_port(ram_write_port);
-            ram_write_port.write_is_ready_pipeline <= ram_write_port.write_is_ready_pipeline(0) & '0';
-            ram_write_port.write_enabled_with_1    <= '0';
+            create_ram_write_port(ram_write_port);
+
             if ram_write_port.write_enabled_with_1 = '1' then
-                test_ram(write_address) <= write_buffer;
+                test_ram(ram_write_port.write_address) <= ram_write_port.write_buffer;
             end if;
 
             if write_from_bus_is_requested(bus_from_communications) then
-                write_data_to_ram(
-                    data_in              => std_logic_vector(to_unsigned(get_data(bus_from_communications),16)),
-                    address_in           => write_address,
-                    write_enabled_with_1 => ram_write_port.write_enabled_with_1,
-                    write_buffer         => write_buffer,
-                    write_address        => write_address);
-
-                ram_write_port.write_is_ready_pipeline(0) <= '1';
-
-
-
+                write_ram(
+                    self       => ram_write_port,
+                    data_in    => std_logic_vector(to_unsigned(get_data(bus_from_communications),16)),
+                    address_in => write_address);
             end if;
 
             if ram_write_is_ready(ram_write_port) then

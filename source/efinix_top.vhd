@@ -29,32 +29,33 @@ architecture rtl of efinix_top is
     signal bus_from_lcd_driver : fpga_interconnect_record := init_fpga_interconnect;
     signal bus_from_top : fpga_interconnect_record := init_fpga_interconnect;
 
-    type std_array is array (integer range <>) of ramtype;
-    signal test_ram       : std_array(0 to 1023)  := (others => (15 downto 0 => x"cccc", others => '0'));
     signal ram_read_port  : ram_read_port_record  := init_ram_read_port;
     signal ram_write_port : ram_write_port_record := init_ram_write_port;
 
-    signal read_address : integer range 0 to 1023 := 0;
-    signal write_address : integer range 0 to 1023 := 0;
-
     signal lcd_driver_in          : lcd_driver_input_record       := init_lcd_driver;
     signal lcd_driver_out         : lcd_driver_output_record      := init_lcd_driver_out;
+
+    signal pixel_image_plotter : pixel_image_plotter_record := init_pixel_image_plotter;
+    type std_array is array (integer range <>) of ramtype;
+    signal test_ram       : std_array(0 to 1023)  := (others => (15 downto 0 => x"cccc", others => '0'));
 
 begin
 
     test_communications : process(clock_120Mhz)
 
+        alias ram_read_port is pixel_image_plotter.read_port;
+        alias ram_write_port is pixel_image_plotter.ram_write_port;
+
     begin
         if rising_edge(clock_120Mhz) then
 
             init_bus(bus_from_top);
+            create_pixel_image_plotter(pixel_image_plotter, lcd_driver_in, lcd_driver_out);
             ------------------------------------------------------------------------
-            create_ram_read_port(ram_read_port);
             if ram_read_is_requested(ram_read_port) then
                 ram_read_port.read_buffer <= test_ram(get_ram_read_address(ram_read_port));
             end if;
 
-            create_ram_write_port(ram_write_port);
             if write_to_ram_is_requested(ram_write_port) then
                 test_ram(ram_write_port.write_address) <= ram_write_port.write_buffer;
             end if;
@@ -73,6 +74,10 @@ begin
                 write_ram(ram_write_port,
                           get_data(bus_from_communications),
                           get_address(bus_from_communications));
+            end if;
+
+            if data_is_requested_from_address(bus_from_communications, 10e3) then
+                request_image(pixel_image_plotter);
             end if;
         ------------------------------------------------------------------------
 

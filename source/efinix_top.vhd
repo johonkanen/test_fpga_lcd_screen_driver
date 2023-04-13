@@ -39,9 +39,11 @@ end package ram_read_port_pkg;
 
 ------------------------------------------------------------------------
 package body ram_read_port_pkg is
+
     procedure create_ram_read_port
     (
         signal self : inout ram_read_port_record
+
     ) is
         constant pipeline_right : integer := self.read_ready_pipeline'left;
     begin
@@ -156,8 +158,19 @@ begin
             if ram_read_is_ready(ram_read_port) then
                 write_data_to_address(bus_to_communications, 0, to_integer(unsigned(get_ram_data(ram_read_port))));
             end if;
-
+            ------------------------------------------------------------------------
             create_ram_read_port(ram_read_port);
+            create_ram_write_port(ram_write_port);
+
+            if ram_read_is_requested(ram_read_port) then
+                ram_read_port.read_buffer <= test_ram(get_ram_read_address(ram_read_port));
+            end if;
+
+            if write_to_ram_is_requested(ram_write_port) then
+                test_ram(ram_write_port.write_address) <= ram_write_port.write_buffer;
+            end if;
+            ------------------------------------------------------------------------
+
             if data_is_requested_from_address(bus_from_communications, 10000) then
                 request_data_from_ram(ram_read_port, read_address);
 
@@ -167,22 +180,13 @@ begin
                     read_address <= 0;
                 end if;
             end if;
-
-            if ram_read_is_requested(ram_read_port) then
-                ram_read_port.read_buffer <= test_ram(get_ram_read_address(ram_read_port));
-            end if;
         ------------------------------------------------------------------------
-            create_ram_write_port(ram_write_port);
 
-            if write_to_ram_is_requested(ram_write_port) then
-                test_ram(ram_write_port.write_address) <= ram_write_port.write_buffer;
-            end if;
 
             if write_from_bus_is_requested(bus_from_communications) then
-                write_ram(
-                    self       => ram_write_port,
-                    data_in    => get_data(bus_from_communications),
-                    address_in => write_address);
+                write_ram(ram_write_port,
+                          get_data(bus_from_communications),
+                          write_address);
             end if;
 
             if ram_write_is_ready(ram_write_port) then

@@ -17,7 +17,7 @@ print("this should be 44254 : ", uart.request_data_from_address(1001))
 print("this should be 44255 : ", uart.request_data_from_address(1002)) 
 print("this should be 44255 : ", uart.request_data_from_address(1002)) 
 print("this should be increasing every time it is read : ")
-# for i in range(1024):
-#     uart.write_data_to_address(i, 1023-i)
+for i in range(1024):
+    uart.write_data_to_address(i, 1023-i)
 for i in range(1024):
     print(uart.request_data_from_address(i))

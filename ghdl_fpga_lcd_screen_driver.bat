@@ -13,9 +13,9 @@ rem ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/hVHDL_memor
 rem ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/hVHDL_memory_library/fpga_ram/ram_read_port_pkg.vhd
 rem ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/hVHDL_memory_library/fpga_ram/ram_write_port_pkg.vhd
 
-ghdl -a --ieee=synopsys --std=08 %source%/efinix_ram/ram_configuration/data_width_16bit_pkg.vhd
-ghdl -a --ieee=synopsys --std=08 %source%/efinix_ram/ram_write_port_pkg.vhd
-ghdl -a --ieee=synopsys --std=08 %source%/efinix_ram/ram_read_port_pkg.vhd
+ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/ram/ram_configuration/data_width_16bit_pkg.vhd
+ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/ram/ram_write_port_pkg.vhd
+ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/ram/ram_read_port_pkg.vhd
 
 
 ghdl -a --ieee=synopsys --std=08 %source%/fpga_communication/hVHDL_uart/uart_transreceiver/uart_rx/uart_rx_pkg.vhd

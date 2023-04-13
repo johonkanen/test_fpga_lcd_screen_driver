@@ -22,7 +22,6 @@ architecture rtl of efinix_top is
     signal bus_from_communications : fpga_interconnect_record := init_fpga_interconnect;
 
     type std_array is array (integer range <>) of ramtype;
-
     signal test_ram       : std_array(0 to 1023)  := (others => (15 downto 0 => x"cccc", others => '0'));
     signal ram_read_port  : ram_read_port_record  := init_ram_read_port;
     signal ram_write_port : ram_write_port_record := init_ram_write_port;
@@ -38,15 +37,6 @@ begin
         if rising_edge(clock_120Mhz) then
 
             init_bus(bus_to_communications);
-
-            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 10    , 44252);
-            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 100   , 44253);
-            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 1001  , 44254);
-            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 1002  , 44255);
-
-            if ram_read_is_ready(ram_read_port) then
-                write_data_to_address(bus_to_communications, 0, to_integer(unsigned(get_ram_data(ram_read_port))));
-            end if;
             ------------------------------------------------------------------------
             create_ram_read_port(ram_read_port);
             if ram_read_is_requested(ram_read_port) then
@@ -58,6 +48,15 @@ begin
                 test_ram(ram_write_port.write_address) <= ram_write_port.write_buffer;
             end if;
             ------------------------------------------------------------------------
+
+            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 10    , 44252);
+            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 100   , 44253);
+            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 1001  , 44254);
+            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 1002  , 44255);
+
+            if ram_read_is_ready(ram_read_port) then
+                write_data_to_address(bus_to_communications, 0, get_ram_data(ram_read_port));
+            end if;
 
             if data_is_requested_from_address(bus_from_communications, get_address(bus_from_communications)) then
                 request_data_from_ram(ram_read_port, get_address(bus_from_communications));

@@ -37,14 +37,6 @@ package ram_write_port_pkg is
         return boolean;
 
 ------------------------------------------------------------------------
-    procedure write_data_to_ram (
-        data_in                     : in std_logic_vector;
-        address_in                  : in integer;
-        signal write_enabled_with_1 : inout std_logic;
-        signal write_buffer         : inout std_logic_vector;
-        signal write_address        : inout integer);
-
-------------------------------------------------------------------------
     function ram_write_is_ready ( self : ram_write_port_record)
         return boolean;
 
@@ -94,20 +86,6 @@ package body ram_write_port_pkg is
     begin
         return self.write_is_ready_pipeline(self.write_is_ready_pipeline'left) = '1';
     end ram_write_is_ready;
-------------------------------------------------------------------------
-    procedure write_data_to_ram
-    (
-        data_in                     : in std_logic_vector;
-        address_in                  : in integer;
-        signal write_enabled_with_1 : inout std_logic;
-        signal write_buffer         : inout std_logic_vector;
-        signal write_address        : inout integer
-    ) is
-    begin
-        write_enabled_with_1 <= '1';
-        write_buffer         <= data_in;
-        write_address        <= address_in;
-    end write_data_to_ram;
 ------------------------------------------------------------------------
     function write_to_ram_is_requested
     (

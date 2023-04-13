@@ -9,12 +9,11 @@ package ram_read_port_pkg is
     type ram_read_port_record is record
         read_enabled_with_1 : std_logic;
         read_address        : integer;
-        ram_read_is_ready   : boolean;
         read_buffer         : std_logic_vector(15 downto 0);
         read_ready_pipeline : std_logic_vector(1 downto 0);
     end record;
 
-    constant init_ram_read_port : ram_read_port_record := ('0', 0, false, (others => '0'), (others => '0'));
+    constant init_ram_read_port : ram_read_port_record := ('0', 0, (others => '0'), (others => '0'));
 
     procedure create_ram_read_port (
         signal self : inout ram_read_port_record);
@@ -45,11 +44,11 @@ package body ram_read_port_pkg is
         signal self : inout ram_read_port_record
 
     ) is
-        constant pipeline_right : integer := self.read_ready_pipeline'left;
+        constant left : integer := self.read_ready_pipeline'left;
     begin
 
         self.read_enabled_with_1 <= '0';
-        self.read_ready_pipeline <= self.read_ready_pipeline(pipeline_right -1 downto 0) & '0';
+        self.read_ready_pipeline <= self.read_ready_pipeline(left-1 downto 0) & '0';
         
     end create_ram_read_port;
 
@@ -130,16 +129,12 @@ architecture rtl of efinix_top is
 
     type std_array is array (integer range <>) of ramtype;
 
-    signal read_enabled_with_1 : std_logic := '0';
-    signal read_address : integer range 0 to 1023;
-    signal read_buffer : ramtype;
-
-    signal ram_read_port : ram_read_port_record := init_ram_read_port;
-
-    signal test_ram : std_array(0 to 1023) := (others => (15 downto 0 => x"cccc", others => '0'));
-
-    signal write_address : integer range 0 to 1023;
+    signal test_ram       : std_array(0 to 1023)  := (others => (15 downto 0 => x"cccc", others => '0'));
+    signal ram_read_port  : ram_read_port_record  := init_ram_read_port;
     signal ram_write_port : ram_write_port_record := init_ram_write_port;
+
+    signal read_address : integer range 0 to 1023 := 0;
+    signal write_address : integer range 0 to 1023 := 0;
 
 begin
 
@@ -160,12 +155,11 @@ begin
             end if;
             ------------------------------------------------------------------------
             create_ram_read_port(ram_read_port);
-            create_ram_write_port(ram_write_port);
-
             if ram_read_is_requested(ram_read_port) then
                 ram_read_port.read_buffer <= test_ram(get_ram_read_address(ram_read_port));
             end if;
 
+            create_ram_write_port(ram_write_port);
             if write_to_ram_is_requested(ram_write_port) then
                 test_ram(ram_write_port.write_address) <= ram_write_port.write_buffer;
             end if;
@@ -182,14 +176,11 @@ begin
             end if;
         ------------------------------------------------------------------------
 
-
             if write_from_bus_is_requested(bus_from_communications) then
                 write_ram(ram_write_port,
                           get_data(bus_from_communications),
-                          write_address);
-            end if;
+                          get_address(bus_from_communications));
 
-            if ram_write_is_ready(ram_write_port) then
                 if write_address < 1023 then
                     write_address <= write_address + 1;
                 else

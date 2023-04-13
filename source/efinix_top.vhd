@@ -7,6 +7,11 @@ library ieee;
     use work.ram_write_port_pkg.all;
     use work.ram_read_port_pkg.all;
 
+    use work.image_configuration_pkg.all;
+    use work.lcd_driver_pkg.all;
+    use work.lcd_pixel_driver_pkg.all;
+    use work.pixel_image_plotter_pkg.all;
+
 entity efinix_top is
     port (
         clock_120Mhz   : in std_logic;
@@ -21,6 +26,9 @@ architecture rtl of efinix_top is
     signal bus_to_communications   : fpga_interconnect_record := init_fpga_interconnect;
     signal bus_from_communications : fpga_interconnect_record := init_fpga_interconnect;
 
+    signal bus_from_lcd_driver : fpga_interconnect_record := init_fpga_interconnect;
+    signal bus_from_top : fpga_interconnect_record := init_fpga_interconnect;
+
     type std_array is array (integer range <>) of ramtype;
     signal test_ram       : std_array(0 to 1023)  := (others => (15 downto 0 => x"cccc", others => '0'));
     signal ram_read_port  : ram_read_port_record  := init_ram_read_port;
@@ -29,6 +37,9 @@ architecture rtl of efinix_top is
     signal read_address : integer range 0 to 1023 := 0;
     signal write_address : integer range 0 to 1023 := 0;
 
+    signal lcd_driver_in          : lcd_driver_input_record       := init_lcd_driver;
+    signal lcd_driver_out         : lcd_driver_output_record      := init_lcd_driver_out;
+
 begin
 
     test_communications : process(clock_120Mhz)
@@ -36,7 +47,7 @@ begin
     begin
         if rising_edge(clock_120Mhz) then
 
-            init_bus(bus_to_communications);
+            init_bus(bus_from_top);
             ------------------------------------------------------------------------
             create_ram_read_port(ram_read_port);
             if ram_read_is_requested(ram_read_port) then
@@ -49,13 +60,8 @@ begin
             end if;
             ------------------------------------------------------------------------
 
-            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 10    , 44252);
-            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 100   , 44253);
-            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 1001  , 44254);
-            connect_read_only_data_to_address(bus_from_communications , bus_to_communications , 1002  , 44255);
-
             if ram_read_is_ready(ram_read_port) then
-                write_data_to_address(bus_to_communications, 0, get_ram_data(ram_read_port));
+                write_data_to_address(bus_from_top, 0, get_ram_data(ram_read_port));
             end if;
 
             if data_is_requested_from_address(bus_from_communications, get_address(bus_from_communications)) then
@@ -73,7 +79,20 @@ begin
         end if; --rising_edge
     end process test_communications;	
 
+    combine_buses : process(clock_120Mhz)
+        
+    begin
+        if rising_edge(clock_120Mhz) then
+            bus_to_communications <= bus_from_top and bus_from_lcd_driver;
+        end if; --rising_edge
+    end process combine_buses;	
+
     u_communications : entity work.fpga_communications
     port map(clock_120Mhz, uart_rx, uart_tx, bus_to_communications, bus_from_communications);
+
+------------------------------------------------------------------------
+    u_lcd_driver : entity work.lcd_driver_w_bus
+    port map(clock_120Mhz, lcd_driver_in, lcd_driver_out, bus_from_communications, bus_from_lcd_driver);
+------------------------------------------------------------------------
 
 end rtl;

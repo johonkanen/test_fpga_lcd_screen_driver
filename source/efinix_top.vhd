@@ -165,14 +165,8 @@ begin
             end if;
             ------------------------------------------------------------------------
 
-            if data_is_requested_from_address(bus_from_communications, 10000) then
-                request_data_from_ram(ram_read_port, read_address);
-
-                if read_address < 1023 then
-                    read_address <= read_address + 1;
-                else
-                    read_address <= 0;
-                end if;
+            if data_is_requested_from_address(bus_from_communications, get_address(bus_from_communications)) then
+                request_data_from_ram(ram_read_port, get_address(bus_from_communications));
             end if;
         ------------------------------------------------------------------------
 
@@ -180,12 +174,6 @@ begin
                 write_ram(ram_write_port,
                           get_data(bus_from_communications),
                           get_address(bus_from_communications));
-
-                if write_address < 1023 then
-                    write_address <= write_address + 1;
-                else
-                    write_address <= 0;
-                end if;
             end if;
         ------------------------------------------------------------------------
 

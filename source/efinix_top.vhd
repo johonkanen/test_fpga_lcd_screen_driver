@@ -98,13 +98,6 @@ begin
                 end if;
             end if;
 
-        -- ------------------------------------------------------------------------
-        --     if write_from_bus_is_requested(bus_from_communications) then
-        --         write_ram(ram_write_port,
-        --                   get_data(bus_from_communications),
-        --                   get_address(bus_from_communications));
-        --     end if;
-
             if data_is_requested_from_address(bus_from_communications, 10e3) then
                 request_image(pixel_image_plotter);
             end if;

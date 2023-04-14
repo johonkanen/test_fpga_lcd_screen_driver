@@ -13,18 +13,22 @@ from lcdprint import stream_lcd
 from uart_communication_functions import *
 uart = uart_link("COM9", 5e6)
 
-print("this should be 44252 : ", uart.request_data_from_address(512)) 
-print("this should be 44253 : ", uart.request_data_from_address(512)) 
-print("this should be 44254 : ", uart.request_data_from_address(512)) 
-print("this should be 44255 : ", uart.request_data_from_address(513)) 
-print("this should be 44255 : ", uart.request_data_from_address(512)) 
+print("read plot buffer : ", uart.request_data_from_address(512)) 
+print("read plot buffer : ", uart.request_data_from_address(512)) 
+print("read plot buffer : ", uart.request_data_from_address(512)) 
+
+print("read plot buffer pointer : ", uart.request_data_from_address(513)) 
+
+print("read plot buffer : ", uart.request_data_from_address(512)) 
 
 uart.write_data_to_address(513,0)
 uart.request_data_stream_from_address(512, 512)
-print(" :")
+print("data from plot memory :")
 print(uart.get_streamed_data(512))
-uart.write_data_to_address(513,0)
-print(uart.request_data_from_address(513))
+uart.write_data_to_address(513,357)
+print("read current plot buffer pointer : ",uart.request_data_from_address(513))
+print("read plot buffer : ", uart.request_data_from_address(512)) 
+print("read current plot buffer pointer should have increased by one : ",uart.request_data_from_address(513))
 
 uart.request_fpga_controlled_data_stream_from_address(10000, 320*480)
 

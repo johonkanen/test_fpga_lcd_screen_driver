@@ -10,14 +10,24 @@ sys.path.append(abs_path + '/fpga_uart_pc_software/')
 from uart_communication_functions import *
 uart = uart_link("COM9", 5e6)
 
-print("test reading data from register 10")
-print("this should be 44252 : ", uart.request_data_from_address(10)) 
-print("this should be 44253 : ", uart.request_data_from_address(100)) 
-print("this should be 44254 : ", uart.request_data_from_address(1001)) 
-print("this should be 44255 : ", uart.request_data_from_address(1002)) 
-print("this should be 44255 : ", uart.request_data_from_address(1002)) 
-print("this should be increasing every time it is read : ")
-for i in range(1024):
-    uart.write_data_to_address(i, 1023-i)
-for i in range(1024):
-    print(uart.request_data_from_address(i))
+# print("test reading data from register 10")
+# print("this should be 44252 : ", uart.request_data_from_address(512)) 
+# print("this should be 44253 : ", uart.request_data_from_address(512)) 
+# print("this should be 44254 : ", uart.request_data_from_address(512)) 
+# print("this should be 44255 : ", uart.request_data_from_address(513)) 
+# print("this should be 44255 : ", uart.request_data_from_address(512)) 
+# print("this should be increasing every time it is read : ")
+
+
+data = np.zeros(512)
+for i in range(512):
+    uart.send_data_request_to_address(512)
+    data[i] = uart.get_data_from_uart()
+
+pyplot.plot(data)
+pyplot.show()
+
+# for i in range(1024):
+#     uart.write_data_to_address(i, 1023-i)
+# for i in range(1024):
+#     print(uart.request_data_from_address(i))

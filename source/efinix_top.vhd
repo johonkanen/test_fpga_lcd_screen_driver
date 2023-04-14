@@ -2,6 +2,7 @@
 library ieee;
     use ieee.std_logic_1164.all;
     use ieee.numeric_std.all;
+    use ieee.math_real.all;
 
     use work.fpga_interconnect_pkg.all;
     use work.ram_write_port_pkg.all;
@@ -40,15 +41,21 @@ architecture rtl of efinix_top is
     function init_ram_with_measurement_values return std_array 
     is
         variable returned_value : std_array(0 to 511) := (others => (others => '0'));
+        variable int_sine_pixel_position : integer;
+        constant x_max : integer := 479;
+        constant y_max : integer := 319;
+        constant frequency : real := 3.5;
     begin
 
-        for i in 0 to 479 loop
-            returned_value(i) := std_logic_vector(to_unsigned(160, ramtype'length));
+        for counter in 0 to 479 loop
+            int_sine_pixel_position := y_max - (integer(round(160.0 + 150.0*sin(real(counter)/real(x_max)*2.0*frequency*math_pi)))); 
+            returned_value(counter) := std_logic_vector(to_unsigned(int_sine_pixel_position, ramtype'length));
         end loop;
 
         return returned_value;
         
     end init_ram_with_measurement_values;
+
     signal test_ram       : std_array(0 to 511)  := init_ram_with_measurement_values;
 
     signal uart_requested : boolean := false;

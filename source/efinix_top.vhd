@@ -93,6 +93,8 @@ begin
 
             init_bus(bus_from_top);
             connect_data_to_address(bus_from_communications, bus_from_top, 513, read_address);
+            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 20e3+1, get_read_data(lcd_spi_driver)(31 downto 16));
+            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 20e3+2, get_read_data(lcd_spi_driver)(15 downto 0));
             create_pixel_image_plotter(pixel_image_plotter, lcd_driver_in, lcd_driver_out);
         ------------------------------------------------------------------------
             if ram_read_is_requested(ram_read_port) then
@@ -122,13 +124,9 @@ begin
             end if;
         ------------------------------------------------------------------------
             create_spi(lcd_spi_driver, lcd_spi_clock, lcd_cs, lcd_spi_data_out, lcd_spi_data_in);
-            if data_is_requested_from_address(bus_from_communications, 20e3) then
-                read_32_bit_data(lcd_spi_driver, x"04");
+            if data_is_requested_from_address_range(bus_from_communications, 30e3, 31e3) then
+                read_32_bit_data(lcd_spi_driver, std_logic_vector(to_unsigned(get_address(bus_from_communications)- 30e3, 8)));
                 lcd_cs_state <= not lcd_cs_state;
-            end if;
-
-            if read_is_ready(lcd_spi_driver) then
-                write_data_to_address(bus_from_top, 0, to_integer(unsigned(get_read_data(lcd_spi_driver)(31 downto 16))));
             end if;
 
         end if; --rising_edge

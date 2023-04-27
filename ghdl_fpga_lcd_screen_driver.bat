@@ -13,6 +13,9 @@ rem ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/hVHDL_memor
 rem ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/hVHDL_memory_library/fpga_ram/ram_read_port_pkg.vhd
 rem ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/hVHDL_memory_library/fpga_ram/ram_write_port_pkg.vhd
 
+
+ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/lcd_spi_driver/lcd_spi_driver_pkg.vhd
+
 ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/ram/ram_configuration/data_width_16bit_pkg.vhd
 ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/ram/ram_write_port_pkg.vhd
 ghdl -a --ieee=synopsys --std=08 %source%/vhdl_lcd_screen_driver/ram/ram_read_port_pkg.vhd

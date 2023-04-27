@@ -13,11 +13,21 @@ library ieee;
     use work.lcd_pixel_driver_pkg.all;
     use work.pixel_image_plotter_pkg.all;
 
+    use work.spi_pkg.all;
+
 entity efinix_top is
     port (
-        clock_120Mhz   : in std_logic;
-        uart_rx : in std_logic;
-        uart_tx : out std_logic
+        clock_120Mhz : in std_logic;
+        uart_rx      : in std_logic;
+        uart_tx      : out std_logic;
+    -- lcd control io
+        lcd_spi_data_in            : in std_logic;
+        data_when_1_command_when_0 : out std_logic;
+        lcd_cs                     : out std_logic;
+        lcd_reset_when_0           : out std_logic; -- reset during power on
+        lcd_spi_clock              : out std_logic;
+        lcd_spi_data_out           : out std_logic;
+        lcd_led                    : out std_logic
     );
 end entity efinix_top;
 
@@ -37,7 +47,11 @@ architecture rtl of efinix_top is
     signal lcd_driver_out         : lcd_driver_output_record      := init_lcd_driver_out;
 
     signal pixel_image_plotter : pixel_image_plotter_record := init_pixel_image_plotter;
+
+------------------------------------------------------------------------
     type std_array is array (integer range <>) of ramtype;
+
+    ------------
     function init_ram_with_measurement_values return std_array 
     is
         variable returned_value : std_array(0 to 511) := (others => (others => '0'));
@@ -55,13 +69,18 @@ architecture rtl of efinix_top is
         return returned_value;
         
     end init_ram_with_measurement_values;
-
+------------------------------------------------------------------------
     signal test_ram       : std_array(0 to 511)  := init_ram_with_measurement_values;
 
     signal uart_requested : boolean := false;
     signal read_address : integer range 0 to 511 := 0;
 
+    signal lcd_spi_driver : spi_record := init_spi;
+    signal lcd_cs_state : std_logic := '1';
+
 begin
+
+    lcd_reset_when_0 <= '1';
 
 ------------------------------------------------------------------------
     test_communications : process(clock_120Mhz)
@@ -102,9 +121,20 @@ begin
                 request_image(pixel_image_plotter);
             end if;
         ------------------------------------------------------------------------
+            create_spi(lcd_spi_driver, lcd_spi_clock, lcd_cs, lcd_spi_data_out, lcd_spi_data_in);
+            if data_is_requested_from_address(bus_from_communications, 20e3) then
+                read_32_bit_data(lcd_spi_driver, x"04");
+                lcd_cs_state <= not lcd_cs_state;
+            end if;
+
+            if read_is_ready(lcd_spi_driver) then
+                write_data_to_address(bus_from_top, 0, to_integer(unsigned(get_read_data(lcd_spi_driver)(31 downto 16))));
+            end if;
 
         end if; --rising_edge
     end process test_communications;	
+    lcd_led <= lcd_cs_state;
+    data_when_1_command_when_0 <= '0';
 
 ------------------------------------------------------------------------
     combine_buses : process(clock_120Mhz)
@@ -123,5 +153,4 @@ begin
     generic map(1199)
     port map(clock_120Mhz, lcd_driver_in, lcd_driver_out, bus_from_communications, bus_from_lcd_driver);
 ------------------------------------------------------------------------
-
 end rtl;

@@ -11,7 +11,7 @@ sys.path.append(abs_path + '/source/vhdl_lcd_screen_driver/python_files/')
 from lcdprint import stream_lcd
 
 from uart_communication_functions import *
-uart = uart_link("COM9", 5e6)
+uart = uart_link("COM15", 5e6)
 
 print("read plot buffer : ", uart.request_data_from_address(512)) 
 print("read plot buffer : ", uart.request_data_from_address(512)) 

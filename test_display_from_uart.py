@@ -4,11 +4,17 @@ import time
 import numpy as np
 from matplotlib import pyplot
 
+
 abs_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(abs_path + '/fpga_uart_pc_software/')
-sys.path.append(abs_path + '/source/vhdl_lcd_screen_driver/python_files/')
+sys.path.append(abs_path + '/source/vhdl_lcd_screen_driver/python_lcd_tests/')
 
-from lcdprint import stream_lcd
+from lcd_plotter import lcd
+
+xsize = 480
+ysize = 320
+
+lcd_plotter = lcd(xsize,ysize)
 
 from uart_communication_functions import *
 uart = uart_link("COM15", 5e6)
@@ -38,4 +44,4 @@ ysize = 320
 d = np.zeros([ysize,xsize])
 d = uart.get_streamed_data(320*480)
 
-stream_lcd(d, xsize, ysize)
+lcd_plotter.stream_lcd(d);

@@ -1,6 +1,10 @@
 # test_lcd_screen_driver
 a test project targeting efinix titanium to drive a tft lcd screen
 
+<p align="center">
+  <img width="550px" src="doc/titanium_evaluation_kit.jpg"/></a>
+</p>
+
 Currently has build for both the efinix titanium evaluation kit as well as a custom board built with the lcd spi pin header.
 
 clone with submodules using

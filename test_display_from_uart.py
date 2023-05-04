@@ -17,7 +17,7 @@ ysize = 320
 lcd_plotter = lcd(xsize,ysize)
 
 from uart_communication_functions import *
-uart = uart_link("COM15", 5e6)
+uart = uart_link("COM9", 5e6)
 
 print("read plot buffer : ", uart.request_data_from_address(512)) 
 print("read plot buffer : ", uart.request_data_from_address(512)) 

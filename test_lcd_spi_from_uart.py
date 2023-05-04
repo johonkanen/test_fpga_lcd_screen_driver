@@ -6,9 +6,6 @@ from matplotlib import pyplot
 
 abs_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(abs_path + '/fpga_uart_pc_software/')
-sys.path.append(abs_path + '/source/vhdl_lcd_screen_driver/python_files/')
-
-from lcdprint import stream_lcd
 
 from uart_communication_functions import *
 uart = uart_link("COM15", 5e6)

@@ -10,7 +10,7 @@ library ieee;
 
     use work.image_configuration_pkg.all;
     use work.lcd_driver_pkg.all;
-    use work.lcd_pixel_driver_pkg.all;
+    use work.pixel_position_counter_pkg.all;
     use work.pixel_image_plotter_pkg.all;
 
     use work.spi_pkg.all;

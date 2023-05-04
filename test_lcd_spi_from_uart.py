@@ -13,11 +13,13 @@ from lcdprint import stream_lcd
 from uart_communication_functions import *
 uart = uart_link("COM15", 5e6)
 
-uart.request_data_from_address(30000) 
-print("read plot buffer : ", uart.request_data_from_address(20001)) 
-print("read plot buffer : ", uart.request_data_from_address(20002)) 
-uart.request_data_from_address(30001) 
-print("read plot buffer : ", uart.request_data_from_address(20001)) 
-print("read plot buffer : ", uart.request_data_from_address(20002)) 
+def read_spi_register(register):
+    uart.request_data_from_address(int(register,16) + 30000) 
+    print("read plot buffer : ", uart.request_data_from_address(20001)) 
+    print("read plot buffer : ", uart.request_data_from_address(20002)) 
 
+read_spi_register("39")
+read_spi_register("4")
+read_spi_register("9")
+read_spi_register("0A")
 

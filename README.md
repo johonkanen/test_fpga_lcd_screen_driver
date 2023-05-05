@@ -1,5 +1,8 @@
 # test_lcd_screen_driver
 a test project targeting efinix titanium to drive a tft lcd screen
+The design of the pixel image plotter is documented in a blog post
+
+https://hardwaredescriptions.com/pixel-image-from-vhdl-part-1/
 
 <p align="center">
   <img width="550px" src="doc/titanium_evaluation_kit.jpg"/></a>

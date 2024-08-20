@@ -114,7 +114,7 @@ begin
 
             if uart_requested then
                 if ram_read_is_ready(ram_read_port) then
-                    write_data_to_address(bus_from_top, 0, get_ram_data(ram_read_port));
+                    write_data_to_address(bus_from_top, 0, std_logic_vector'(get_ram_data(ram_read_port)));
                     uart_requested <= false;
                 end if;
             end if;
@@ -144,6 +144,7 @@ begin
 
 ------------------------------------------------------------------------
     u_communications : entity work.fpga_communications
+    generic map(fpga_interconnect_pkg => work.fpga_interconnect_pkg)
     port map(clock_120Mhz, uart_rx, uart_tx, bus_to_communications, bus_from_communications);
 
 ------------------------------------------------------------------------
